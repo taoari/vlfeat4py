@@ -1,0 +1,21 @@
+vl_sift changes:
+
+* uncomment <mexutils.h>, include <armadillo>
+
+* delete option codes and options
+
+* mexFunction() -> vl_sift(...)
+    * argument default values in header file
+
+* rewrite in part: argument parsing (!TODO!)
+    * basic data type: assert, set to default values, parsing
+    * array: -> armaMat
+
+* mexPrintf -> printf
+
+* mxRealloc -> (double*)realloc
+
+* uncomment if (nout > 1)
+
+* rewrite out part (!TODO!)
+    * double* -> armaMat
