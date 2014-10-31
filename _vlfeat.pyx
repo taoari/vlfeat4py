@@ -65,14 +65,14 @@ def vl_sift(np.ndarray[np.float32_t, ndim=2] data,
             frames=None,
             int octaves = -1,
             int levels = -1,
-            int first_octave = -1,
-            double peak_thresh = -1,
-            double edge_thresh = -1,
-            double norm_thresh = -1,
+            int firstOctave = -1,
+            double peakThresh = -1,
+            double edgeThresh = -1,
+            double normThresh = -1,
             double magnif = -1,
-            double window_size = -1,
+            double windowSize = -1,
             bool orientations = False,
-            bool float_descriptors = False,
+            bool floatDescriptors = False,
             int verbose = 0):
 
     cdef np.ndarray[double, ndim=2] f
@@ -89,9 +89,9 @@ def vl_sift(np.ndarray[np.float32_t, ndim=2] data,
     _d = Mat[float]()
 
     c_vl_sift(<const Mat[float] &>_I, _f, _d, 
-              octaves, levels, first_octave, peak_thresh,
-              edge_thresh, norm_thresh, magnif, window_size, orientations,
-              float_descriptors, verbose)
+              octaves, levels, firstOctave, peakThresh,
+              edgeThresh, normThresh, magnif, windowSize, orientations,
+              floatDescriptors, verbose)
     if frames == None:
         f = dToNdarray(_f)
     else:

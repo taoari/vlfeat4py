@@ -267,15 +267,15 @@ check_sorted (double const * keys, vl_size nkeys)
 //void vl_sift(const arma::fmat &I, arma::mat &f, arma::fmat &d,
 //        int octaves = -1,
 //        int levels = -1,
-//        int first_octave = -1,
-//        double peak_thresh = -1,
-//        double edge_thresh = -1,
-//        double norm_thresh = -1,
+//        int firstOctave = -1,
+//        double peakThresh = -1,
+//        double edgeThresh = -1,
+//        double normThresh = -1,
 //        double magnif = -1,
-//        double window_size = -1,
+//        double windowSize = -1,
 //        bool orientations = false,
-//        bool float_descriptors = false,
-//        int verbose = 0)
+//        bool floatDescriptors = false,
+//        int verbose = 0);
 //! default arguments can only be given in declaration
 
 void vl_sift(const arma::fmat &I, arma::mat &f, arma::fmat &d,
