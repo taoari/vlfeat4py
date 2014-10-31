@@ -60,6 +60,9 @@ cdef extern from "vlfeat.hpp":
     cdef void c_vl_sift "vl_sift" (Mat[float] &, Mat[double] &, Mat[float] &, \
                       int, int, int, double, double, double, double, double, \
                       bool, bool, int)
+    cdef void c_vl_dsift "vl_dsift" (Mat[float] &, Mat[double] &, Mat[float] &, \
+                                     Mat[double] &, Mat[double] &, Mat[double] &, \
+                                     Mat[double] &, bool, bool, double, bool, int)
 
 def vl_sift(np.ndarray[np.float32_t, ndim=2] data, 
             frames=None,
@@ -96,6 +99,61 @@ def vl_sift(np.ndarray[np.float32_t, ndim=2] data,
         f = dToNdarray(_f)
     else:
         f = frames
+    d = fToNdarray(_d)
+    
+    return f, d
+    
+def vl_dsift(np.ndarray[float, ndim=2] data,
+             bounds = None,
+             step = None,
+             size = None,
+             geometry = None,
+             bool fast = True,
+             bool norm = False,
+             double windowSize = -1.0,
+             bool floatDescriptors = False,
+             int verbose = 0):
+
+    cdef np.ndarray[double, ndim=2] f
+    cdef np.ndarray[float, ndim=2] d
+    
+    cdef Mat[float] _I
+    cdef Mat[double] _f
+    cdef Mat[float] _d
+    cdef Mat[double] _bounds
+    cdef Mat[double] _step
+    cdef Mat[double] _size
+    cdef Mat[double] _geometry
+    
+    _I = fToArmaMat(data)
+    _f = Mat[double]()
+    _d = Mat[float]()
+    
+    if bounds == None:
+        _bounds = Mat[double]()
+    else:
+        _bounds = dToArmaMat(np.float64(bounds, order='F').reshape((-1,1)))
+        
+    if step == None:
+        _step = Mat[double]()
+    else:
+        _step = dToArmaMat(np.float64(step, order='F').reshape((-1,1)))
+
+    if size == None:
+        _size = Mat[double]()
+    else:
+        _size = dToArmaMat(np.float64(size, order='F').reshape((-1,1)))
+        
+    if geometry == None:
+        _geometry = Mat[double]()
+    else:
+        _geometry = dToArmaMat(np.float64(geometry, order='F').reshape((-1,1)))
+
+    c_vl_dsift(<const Mat[float] &>_I, _f, _d,
+               _bounds, _step, _size, _geometry, 
+               fast, norm, windowSize, floatDescriptors, verbose)
+               
+    f = dToNdarray(_f)
     d = fToNdarray(_d)
     
     return f, d
