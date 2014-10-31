@@ -66,6 +66,8 @@ cdef extern from "vlfeat.hpp":
                                      Mat[double] &, bool, bool, double, bool, int)
     cdef void c_vl_imsmooth_f "vl_imsmooth" (Mat[float] &, Mat[float] &, \
             double, string, string, int, int)
+    cdef void c_vl_imsmooth_d "vl_imsmooth" (Mat[double] &, Mat[double] &, \
+            double, string, string, int, int)
 
 def vl_sift(np.ndarray[np.float32_t, ndim=2] data, 
             frames=None,
@@ -161,7 +163,7 @@ def vl_dsift(np.ndarray[float, ndim=2] data,
     
     return f, d
     
-def vl_imsmooth(np.ndarray[float, ndim=2] I,
+def vl_imsmooth_f(np.ndarray[float, ndim=2] I,
         double sigma,
         string padding = "continuity",
         string kernel = "gaussian",
@@ -182,3 +184,38 @@ def vl_imsmooth(np.ndarray[float, ndim=2] I,
     Is = fToNdarray(_Is)
     
     return Is
+
+def vl_imsmooth_d(np.ndarray[double, ndim=2] I,
+        double sigma,
+        string padding = "continuity",
+        string kernel = "gaussian",
+        int subsample = 1,
+        int verbose = 0):
+    
+    cdef np.ndarray[double, ndim=2] Is
+    
+    cdef Mat[double] _I
+    cdef Mat[double] _Is
+    
+    _I = dToArmaMat(I)
+    _Is = Mat[double]()
+    
+    c_vl_imsmooth_d(<const Mat[double] &>_I, _Is, 
+            sigma, padding, kernel, subsample, verbose)
+    
+    Is = dToNdarray(_Is)
+    
+    return Is
+
+def vl_imsmooth(I,
+        double sigma,
+        string padding = "continuity",
+        string kernel = "gaussian",
+        int subsample = 1,
+        int verbose = 0):
+    if I.dtype == np.float32:
+        return vl_imsmooth_f(I, sigma, padding, kernel, subsample, verbose)
+    elif I.dtype == np.float64:
+        return vl_imsmooth_d(I, sigma, padding, kernel, subsample, verbose)
+    else:
+        return None
