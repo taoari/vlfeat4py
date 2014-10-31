@@ -26,5 +26,16 @@ void vl_sift(const arma::fmat &I, arma::mat &f, arma::fmat &d,
         bool floatDescriptors = false,
         int verbose = 0);
 
+void vl_dsift(const arma::fmat &I, arma::mat &f, arma::fmat &d,
+        const arma::mat &bounds_ = arma::mat(),
+        const arma::mat &step_ = arma::mat(),
+        const arma::mat &size_ = arma::mat(),
+        const arma::mat &geometry_ = arma::mat(),
+        bool fast = true,
+        bool norm = true,
+        double windowSize = -1,
+        bool floatDescriptors = false,
+        int verbose = 0);
+
 
 #endif /* VLFEAT_HPP_ */
