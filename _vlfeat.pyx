@@ -13,6 +13,7 @@ import numpy as np
 cimport cython
 cimport numpy as np
 from libcpp cimport bool
+from libcpp.string cimport string
 from cython.operator cimport dereference as deref
 
 # datatypes:
@@ -63,6 +64,8 @@ cdef extern from "vlfeat.hpp":
     cdef void c_vl_dsift "vl_dsift" (Mat[float] &, Mat[double] &, Mat[float] &, \
                                      Mat[double] &, Mat[double] &, Mat[double] &, \
                                      Mat[double] &, bool, bool, double, bool, int)
+    cdef void c_vl_imsmooth_f "vl_imsmooth" (Mat[float] &, Mat[float] &, \
+            double, string, string, int, int)
 
 def vl_sift(np.ndarray[np.float32_t, ndim=2] data, 
             frames=None,
@@ -157,3 +160,25 @@ def vl_dsift(np.ndarray[float, ndim=2] data,
     d = fToNdarray(_d)
     
     return f, d
+    
+def vl_imsmooth(np.ndarray[float, ndim=2] I,
+        double sigma,
+        string padding = "continuity",
+        string kernel = "gaussian",
+        int subsample = 1,
+        int verbose = 0):
+    
+    cdef np.ndarray[float, ndim=2] Is
+    
+    cdef Mat[float] _I
+    cdef Mat[float] _Is
+    
+    _I = fToArmaMat(I)
+    _Is = Mat[float]()
+    
+    c_vl_imsmooth_f(<const Mat[float] &>_I, _Is, 
+            sigma, padding, kernel, subsample, verbose)
+    
+    Is = fToNdarray(_Is)
+    
+    return Is

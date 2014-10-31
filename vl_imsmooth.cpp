@@ -200,7 +200,7 @@ void vl_imsmooth(const arma::fmat &I, arma::fmat &Is,
     M = I.n_rows;
     N = I.n_cols;
     ndims = 2; // TODO: only for gray image now
-    K = 1;
+    K = (ndims > 2)?1:1;
     
     M_ = (M - 1) / step + 1 ;
     N_ = (N - 1) / step + 1 ;
@@ -270,7 +270,7 @@ void vl_imsmooth(const arma::mat &I, arma::mat &Is,
     M = I.n_rows;
     N = I.n_cols;
     ndims = 2; // TODO: only for gray image now
-    K = 1;
+    K = (ndims > 2)?1:1;
     
     M_ = (M - 1) / step + 1 ;
     N_ = (N - 1) / step + 1 ;
