@@ -13,6 +13,20 @@ inline void m_assert(bool condition, const std::string &message="") {
     }
 }
 
+void vl_imsmooth(const arma::fmat &I, arma::fmat &Is, 
+        double sigma,
+        const std::string &padding_ = "continuity",
+        const std::string &kernel_ = "gaussian",
+        int subsample = 1,
+        int verbose = 0);
+
+void vl_imsmooth(const arma::mat &I, arma::mat &Is, 
+        double sigma,
+        const std::string &padding_ = "continuity",
+        const std::string &kernel_ = "gaussian",
+        int subsample = 1,
+        int verbose = 0);
+
 void vl_sift(const arma::fmat &I, arma::mat &f, arma::fmat &d,
         int octaves = -1,
         int levels = -1,
