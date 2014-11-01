@@ -376,13 +376,13 @@ void vl_kmeans(const arma::fmat &X, arma::fmat &Y, // for assignments and energy
     }
     printf("kmeans: Initialization = %s\n", initializationName) ;
     printf("kmeans: Algorithm = %s\n", algorithmName) ;
-    printf("kmeans: MaxNumIterations = %d\n", vl_kmeans_get_max_num_iterations(kmeans)) ;
+    printf("kmeans: MaxNumIterations = %d\n", (int)vl_kmeans_get_max_num_iterations(kmeans)) ;
     printf("kmeans: MinEnergyVariation = %f\n", vl_kmeans_get_min_energy_variation(kmeans)) ;
-    printf("kmeans: NumRepetitions = %d\n", vl_kmeans_get_num_repetitions(kmeans)) ;
+    printf("kmeans: NumRepetitions = %d\n", (int)vl_kmeans_get_num_repetitions(kmeans)) ;
     printf("kmeans: data type = %s\n", vl_get_type_name(vl_kmeans_get_data_type(kmeans))) ;
     printf("kmeans: distance = %s\n", vl_get_vector_comparison_type_name(vl_kmeans_get_distance(kmeans))) ;
-    printf("kmeans: data dimension = %d\n", dimension) ;
-    printf("kmeans: num. data points = %d\n", numData) ;
+    printf("kmeans: data dimension = %d\n", (int)dimension) ;
+    printf("kmeans: num. data points = %d\n", (int)numData) ;
     printf("kmeans: num. centers = %d\n", numCenters) ;
     printf("kmeans: max num. comparisons = %d\n", maxNumComparisons) ;
     printf("kmeans: num. trees = %d\n", numTrees) ;
