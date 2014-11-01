@@ -4,7 +4,8 @@ from Cython.Distutils import build_ext
 
 ext = Extension('_vlfeat',
                 sources=['_vlfeat.pyx', 
-                'vl_sift.cpp', 'vl_dsift.cpp', 'vl_imsmooth.cpp'],
+                'vl_sift.cpp', 'vl_dsift.cpp', 
+                'vl_imsmooth.cpp', 'vl_homkermap.cpp'],
                 libraries = ['armadillo', 'vl'],
                 language='c++',
                 extra_compile_args=['-D NPY_NO_DEPRECATED_API'])

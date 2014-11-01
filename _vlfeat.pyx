@@ -68,6 +68,8 @@ cdef extern from "vlfeat.hpp":
             double, string, string, int, int)
     cdef void c_vl_imsmooth_d "vl_imsmooth" (Mat[double] &, Mat[double] &, \
             double, string, string, int, int)
+    cdef void c_vl_homkermap "vl_homkermap" (Mat[float] &, Mat[float] &, int, \
+            string, string, double, double) 
 
 def vl_sift(np.ndarray[np.float32_t, ndim=2] data, 
             frames=None,
@@ -219,3 +221,23 @@ def vl_imsmooth(I,
         return vl_imsmooth_d(I, sigma, padding, kernel, subsample, verbose)
     else:
         return None
+
+def vl_homkermap(np.ndarray[float, ndim=2] X, int n,
+        string kernel = "kchi2",
+        string window = "rectangular",
+        double gamma = 1.0,
+        double period = -1):
+
+    cdef Mat[float] _X
+    cdef Mat[float] _V
+    
+    _X = fToArmaMat(X)
+    _V = Mat[float]()
+    
+    c_vl_homkermap(<const Mat[float] &>_X, _V, n,
+            kernel, window, gamma, period)
+            
+    cdef np.ndarray[float, ndim=2] V
+    V = fToNdarray(_V)
+    
+    return V
