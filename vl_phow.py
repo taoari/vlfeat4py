@@ -1,11 +1,9 @@
 # credit: https://github.com/shackenberg/phow_caltech101.py/blob/master/vl_phow.py
 # author: Tao Wei <taowei@buffalo.edu>
-# about 4 times faster than the original vl_phow.py
 
 import numpy as np
 import _vlfeat
 from _vlfeat import vl_dsift
-import cv2
 from sys import maxint
 
 """
@@ -15,17 +13,33 @@ Python rewrite of https://github.com/vlfeat/vlfeat/blob/master/toolbox/sift/vl_p
 
 """
 
+def rgb2gray(rgb):
+    '''MATLAB implementation of rgb2gray'''
+    r, g, b = rgb[:,:,0], rgb[:,:,1], rgb[:,:,2]
+    gray = 0.2989 * r + 0.5870 * g + 0.1140 * b
+    return gray
+
+def rgb2hsv(rgb):
+    '''rgb2hsv.
+    
+    H, S scale to [0,1], V does not; MATLAB also scales V to [0,1]'''
+    from matplotlib.colors import rgb_to_hsv
+    return rgb_to_hsv(rgb)
+
+    
 def vl_imsmooth(I, sigma):
     '''vl_imsmooth.
     
     Currently only comptabile with vl_imsmooth for grayscale images'''
     if I.ndim == 2:
         return _vlfeat.vl_imsmooth(I, sigma)
+    else:
+        raise NotImplementedError('Color images are not supported!')
         
-    w = int(np.ceil(4.0*sigma))
-    ksize = 2*w + 1
-    I = cv2.GaussianBlur(I, (ksize, ksize), sigma)
-    return np.asfortranarray(I, dtype=I.dtype)
+#    w = int(np.ceil(4.0*sigma))
+#    ksize = 2*w + 1
+#    I = cv2.GaussianBlur(I, (ksize, ksize), sigma)
+#    return np.asfortranarray(I, dtype=I.dtype)
     
 def vl_phow(I,
             verbose=False,
@@ -100,6 +114,9 @@ def vl_phow(I,
                    magnif, windowSize, contrastThreshold)
     dsiftOpts = DSiftOptions(opts)
 
+    # make sure image I is float32, f_order
+    I = np.asfortranarray(I, dtype=np.float32)
+    
     # Extract the features
     imageSize = I.shape
     if I.ndim == 3:
@@ -109,7 +126,7 @@ def vl_phow(I,
     if opts.color == 'gray':
         numChannels = 1
         if (I.ndim != 2):
-            I = cv2.cvtColor(I, cv2.COLOR_RGB2GRAY)
+            I = rgb2gray(I)
     else:
         numChannels = 3
         if (I.ndim == 2):
@@ -117,7 +134,7 @@ def vl_phow(I,
         if opts.color == 'rgb':
             pass
         elif opts.color == 'hsv':
-            I = cv2.cvtColor(I, cv2.COLOR_RGB2HSV)
+            I = rgb2hsv(I)
         elif opts.color == 'opponent':
              # from https://github.com/vlfeat/vlfeat/blob/master/toolbox/sift/vl_phow.m
              # Note that the mean differs from the standard definition of opponent
@@ -138,9 +155,6 @@ def vl_phow(I,
         print('{0}: color space: {1}'.format('vl_phow', opts.color))
         print('{0}: image size: {1} x {2}'.format('vl_phow', imageSize[0], imageSize[1]))
         print('{0}: sizes: [{1}]'.format('vl_phow', opts.sizes))
-    
-    # make sure image I is float32, f_order
-    I = np.asfortranarray(I, dtype=np.float32)
 
     frames_all = []
     descrs_all = []
@@ -240,10 +254,11 @@ class DSiftOptions(object):
         self.step = opts.step
 
 if __name__ == "__main__":
-    from scipy.misc import lena
+    from scipy.misc import lena, imread
     import time
-    I = np.float32(lena())
-    # I = cv2.imread('test/lena_color.jpg')
+    I = np.asfortranarray(lena(), dtype=np.float32)
+    # I = imread('lena_color.jpg')
     __TIC = time.time()
-    frames, descrs = vl_phow(I, color='hsv', verbose=1) 
+    frames, descrs = vl_phow(I, verbose=1) 
+    # frames, descrs = vl_phow(I, color='hsv', verbose=1) 
     print time.time() - __TIC
