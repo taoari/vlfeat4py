@@ -51,5 +51,10 @@ void vl_dsift(const arma::fmat &I, arma::mat &f, arma::fmat &d,
         bool floatDescriptors = false,
         int verbose = 0);
 
+void vl_homkermap(const arma::fmat &XX, arma::fmat &VV, int n,
+        const std::string & kernel = "kchi2",
+        const std::string & window = "rectangular",
+        double gamma = 1.0,
+        double period = -1);
 
 #endif /* VLFEAT_HPP_ */
