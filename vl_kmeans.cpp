@@ -393,8 +393,7 @@ void vl_kmeans(const arma::fmat &X, arma::fmat &Y, // for assignments and energy
   /*                                    Clustering and quantization */
   /* -------------------------------------------------------------- */
 
-    // TODO: ! cause memory leak
-  // energy = vl_kmeans_cluster(kmeans, data, dimension, numData, numCenters) ;
+   energy = vl_kmeans_cluster(kmeans, data, dimension, numData, numCenters) ;
 
   /* copy centers */
   // OUT(CENTERS) = mxCreateNumericMatrix (dimension, numCenters, classID, mxREAL) ;

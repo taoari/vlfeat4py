@@ -70,6 +70,8 @@ cdef extern from "vlfeat.hpp":
             double, string, string, int, int)
     cdef void c_vl_homkermap "vl_homkermap" (Mat[float] &, Mat[float] &, int, \
             string, string, double, double) 
+    cdef void c_vl_kmeans "vl_kmeans" (Mat[float] &, Mat[float] &, int, \
+            string, string, string, double, int, int, int, int, int)
 
 def vl_sift(np.ndarray[np.float32_t, ndim=2] data, 
             frames=None,
@@ -241,3 +243,30 @@ def vl_homkermap(np.ndarray[float, ndim=2] X, int n,
     V = fToNdarray(_V)
     
     return V
+    
+def vl_kmeans(np.ndarray[float, ndim=2] X, int numCenters,
+        string algorithm = "lloyd",
+        string distance = "l2",
+        string initialization = "plusplus",
+        double minEnergyVariation = -1,
+        int numRepetitions = 1,
+        int numTrees = 3,
+        int maxNumComparisons = 100,
+        int maxNumIterations = 100,
+        int verbose = 0):
+
+    cdef Mat[float] _X
+    cdef Mat[float] _Y
+    
+    _X = fToArmaMat(X)
+    _Y = Mat[float]()
+    
+    c_vl_kmeans(<const Mat[float] &>_X, _Y, numCenters,
+            algorithm, distance, initialization, minEnergyVariation,
+            numRepetitions, numTrees, maxNumComparisons, maxNumIterations,
+            verbose)
+            
+    cdef np.ndarray[float, ndim=2] Y
+    Y = fToNdarray(_Y)
+    
+    return Y
