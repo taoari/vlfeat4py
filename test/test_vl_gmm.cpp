@@ -43,6 +43,9 @@ int main() {
 	fmat means, covariances, priors, posteriors;
 	
 	vl_gmm(d, 30, means, covariances, priors, posteriors);
+	
+	fmat enc;
+	vl_fisher(d, means, covariances, priors, enc);
 
 	return 0;
 }

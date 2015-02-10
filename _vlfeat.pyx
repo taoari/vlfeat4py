@@ -28,6 +28,9 @@ cdef extern from "vlfeat.hpp":
             Mat[float] &, Mat[float] &, Mat[float] &, Mat[float] &, \
             string, Mat[float] &, Mat[float] &, Mat[float] &, \
             int, int, Mat[double] &, int)
+    cdef void c_vl_fisher "vl_fisher" (Mat[float] &, \
+            Mat[float] &, Mat[float] &, Mat[float] &, \
+            Mat[float] &, bool, bool, bool, bool, int)
 
 def vl_sift(np.ndarray[np.float32_t, ndim=2] data, 
             frames=None,
@@ -264,3 +267,25 @@ def vl_gmm(np.ndarray[float, ndim=2] X, int numClusters,
     posteriors = pyarma_from_float(_posteriors)
     return means, covariances, priors, posteriors
 
+def vl_fisher(np.ndarray[float, ndim=2] X,
+        np.ndarray[float, ndim=2] means, 
+        np.ndarray[float, ndim=2] covariances,
+        np.ndarray[float, ndim=2] priors,
+        bool normalized = False,
+        bool squareRoot = False,
+        bool improved = False,
+        bool fast = False,
+        int verbosity = 0):
+    cdef Mat[float] _X, _means, _covariances, _priors
+    _X = pyarma_to_float(X)
+    _means = pyarma_to_float(means)
+    _covariances = pyarma_to_float(covariances)
+    _priors = pyarma_to_float(priors)
+    
+    cdef Mat[float] _enc
+    c_vl_fisher(_X, _means, _covariances, _priors, _enc, 
+        normalized, squareRoot, improved, fast, verbosity)
+    
+    cdef np.ndarray[float, ndim=2] enc
+    enc = pyarma_from_float(_enc)
+    return enc

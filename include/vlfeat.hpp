@@ -83,5 +83,16 @@ void vl_gmm (const arma::fmat &X, int numClusters,
 	int numRepetitions = 1,
 	const arma::mat &covarianceBound_ = arma::mat(),
 	int verbose = 0);
+	
+void vl_fisher(const arma::fmat &X,
+	const arma::fmat &means_, 
+	const arma::fmat &covariances_, 
+	const arma::fmat &priors_,
+	arma::fmat &enc,
+	bool normalized = false,
+	bool squareRoot = false,
+	bool improved = false,
+	bool fast = false,
+	int verbosity = 0);
         
 #endif /* VLFEAT_HPP_ */
