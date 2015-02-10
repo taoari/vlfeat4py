@@ -1,4 +1,4 @@
-#include "../vlfeat.hpp"
+#include "vlfeat.hpp"
 #include <iostream>
 
 using namespace arma;

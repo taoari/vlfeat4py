@@ -3,12 +3,13 @@ from distutils.extension import Extension
 from Cython.Distutils import build_ext
 
 ext = Extension('_vlfeat',
+                include_dirs=['include/'],
                 sources=['_vlfeat.pyx', 
-                'vl_sift.cpp', 
-                'vl_dsift.cpp', 
-                'vl_imsmooth.cpp', 
-                'vl_homkermap.cpp', 
-                'vl_kmeans.cpp'],
+                'src/vl_sift.cpp', 
+                'src/vl_dsift.cpp', 
+                'src/vl_imsmooth.cpp', 
+                'src/vl_homkermap.cpp', 
+                'src/vl_kmeans.cpp'],
                 libraries = ['armadillo', 'vl'],
                 language='c++',
                 extra_compile_args=['-D NPY_NO_DEPRECATED_API'])
