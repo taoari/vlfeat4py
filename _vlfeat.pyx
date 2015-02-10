@@ -1,62 +1,14 @@
-cdef extern from "<armadillo>" namespace "arma":
-    cdef cppclass Mat[T]:
-        unsigned int n_rows
-        unsigned int n_cols
-        unsigned int n_elem
-        Mat()
-        Mat(T*, unsigned int, unsigned int, bool, bool)
-        Mat(T*, unsigned int, unsigned int)
-        T *memptr()
-
 import numpy as np
-
-cimport cython
 cimport numpy as np
+cimport cython
 from libcpp cimport bool
+
 from libcpp.string cimport string
 from cython.operator cimport dereference as deref
 
-# datatypes:
-# double, cython.double, np.double_t, np.float64_t
-# float, cython.float, np.float32_t
-# dtype:
-# np.float, np.double, np.float64 # python float is 64 bit
+from arma cimport Mat, pyarma_from_double, pyarma_to_double
+from arma cimport pyarma_from_float, pyarma_to_float
 
-cdef Mat[double] dToArmaMat(np.ndarray[double, ndim=2] X):
-    if not X.flags.f_contiguous:
-        X = X.copy(order="F")
-    return Mat[double](<double*> X.data, X.shape[0], X.shape[1], 0, 1)
-
-cdef Mat[float] fToArmaMat(np.ndarray[float, ndim=2] X):
-    if not X.flags.f_contiguous:
-        X = X.copy(order="F")
-    return Mat[float](<float*> X.data, X.shape[0], X.shape[1], 0, 1)
-
-@cython.boundscheck(False)
-cdef np.ndarray[double, ndim=2] dToNdarray(Mat[double] &m):
-    cdef np.ndarray[double, ndim=2] arr
-    cdef double *pArr
-    cdef double *pM
-    arr = np.ndarray((m.n_rows, m.n_cols), dtype=np.float64, order='F')
-    pArr = <double *>arr.data
-    pM = m.memptr()
-    for i in range(m.n_rows*m.n_cols):
-        pArr[i] = pM[i]
-    return arr
-
-@cython.boundscheck(False)
-cdef np.ndarray[float, ndim=2] fToNdarray(Mat[float] &m):
-    cdef np.ndarray[float, ndim=2] arr
-    cdef float *pArr
-    cdef float *pM
-    arr = np.ndarray((m.n_rows, m.n_cols), dtype=np.float32, order='F')
-    pArr = <float *>arr.data
-    pM = m.memptr()
-    for i in range(m.n_rows*m.n_cols):
-        pArr[i] = pM[i]
-    return arr
-
-      
 cdef extern from "vlfeat.hpp":
     cdef void c_vl_sift "vl_sift" (Mat[float] &, Mat[double] &, Mat[float] &, \
                       int, int, int, double, double, double, double, double, \
@@ -93,11 +45,11 @@ def vl_sift(np.ndarray[np.float32_t, ndim=2] data,
     cdef Mat[double] _f
     cdef Mat[float] _d
     
-    _I = fToArmaMat(data)
+    _I = pyarma_to_float(data)
     if frames == None:
         _f = Mat[double]()
     else:
-        _f = dToArmaMat(frames)
+        _f = pyarma_to_double(frames)
     _d = Mat[float]()
 
     c_vl_sift(<const Mat[float] &>_I, _f, _d, 
@@ -105,10 +57,10 @@ def vl_sift(np.ndarray[np.float32_t, ndim=2] data,
               edgeThresh, normThresh, magnif, windowSize, orientations,
               floatDescriptors, verbose)
     if frames == None:
-        f = dToNdarray(_f)
+        f = pyarma_from_double(_f)
     else:
         f = frames
-    d = fToNdarray(_d)
+    d = pyarma_from_float(_d)
     
     return f, d
     
@@ -134,36 +86,36 @@ def vl_dsift(np.ndarray[float, ndim=2] data,
     cdef Mat[double] _size
     cdef Mat[double] _geometry
     
-    _I = fToArmaMat(data)
+    _I = pyarma_to_float(data)
     _f = Mat[double]()
     _d = Mat[float]()
     
     if bounds == None:
         _bounds = Mat[double]()
     else:
-        _bounds = dToArmaMat(np.float64(bounds, order='F').reshape((-1,1)))
+        _bounds = pyarma_to_double(np.float64(bounds, order='F').reshape((-1,1)))
         
     if step == None:
         _step = Mat[double]()
     else:
-        _step = dToArmaMat(np.float64(step, order='F').reshape((-1,1)))
+        _step = pyarma_to_double(np.float64(step, order='F').reshape((-1,1)))
 
     if size == None:
         _size = Mat[double]()
     else:
-        _size = dToArmaMat(np.float64(size, order='F').reshape((-1,1)))
+        _size = pyarma_to_double(np.float64(size, order='F').reshape((-1,1)))
         
     if geometry == None:
         _geometry = Mat[double]()
     else:
-        _geometry = dToArmaMat(np.float64(geometry, order='F').reshape((-1,1)))
+        _geometry = pyarma_to_double(np.float64(geometry, order='F').reshape((-1,1)))
 
     c_vl_dsift(<const Mat[float] &>_I, _f, _d,
                _bounds, _step, _size, _geometry, 
                fast, norm, windowSize, floatDescriptors, verbose)
                
-    f = dToNdarray(_f)
-    d = fToNdarray(_d)
+    f = pyarma_from_double(_f)
+    d = pyarma_from_float(_d)
     
     return f, d
     
@@ -179,13 +131,13 @@ def vl_imsmooth_f(np.ndarray[float, ndim=2] I,
     cdef Mat[float] _I
     cdef Mat[float] _Is
     
-    _I = fToArmaMat(I)
+    _I = pyarma_to_float(I)
     _Is = Mat[float]()
     
     c_vl_imsmooth_f(<const Mat[float] &>_I, _Is, 
             sigma, padding, kernel, subsample, verbose)
     
-    Is = fToNdarray(_Is)
+    Is = pyarma_from_float(_Is)
     
     return Is
 
@@ -201,13 +153,13 @@ def vl_imsmooth_d(np.ndarray[double, ndim=2] I,
     cdef Mat[double] _I
     cdef Mat[double] _Is
     
-    _I = dToArmaMat(I)
+    _I = pyarma_to_double(I)
     _Is = Mat[double]()
     
     c_vl_imsmooth_d(<const Mat[double] &>_I, _Is, 
             sigma, padding, kernel, subsample, verbose)
     
-    Is = dToNdarray(_Is)
+    Is = pyarma_from_double(_Is)
     
     return Is
 
@@ -233,14 +185,14 @@ def vl_homkermap(np.ndarray[float, ndim=2] X, int n,
     cdef Mat[float] _X
     cdef Mat[float] _V
     
-    _X = fToArmaMat(X)
+    _X = pyarma_to_float(X)
     _V = Mat[float]()
     
     c_vl_homkermap(<const Mat[float] &>_X, _V, n,
             kernel, window, gamma, period)
             
     cdef np.ndarray[float, ndim=2] V
-    V = fToNdarray(_V)
+    V = pyarma_from_float(_V)
     
     return V
     
@@ -258,7 +210,7 @@ def vl_kmeans(np.ndarray[float, ndim=2] X, int numCenters,
     cdef Mat[float] _X
     cdef Mat[float] _Y
     
-    _X = fToArmaMat(X)
+    _X = pyarma_to_float(X)
     _Y = Mat[float]()
     
     c_vl_kmeans(<const Mat[float] &>_X, _Y, numCenters,
@@ -267,6 +219,6 @@ def vl_kmeans(np.ndarray[float, ndim=2] X, int numCenters,
             verbose)
             
     cdef np.ndarray[float, ndim=2] Y
-    Y = fToNdarray(_Y)
+    Y = pyarma_from_float(_Y)
     
     return Y
