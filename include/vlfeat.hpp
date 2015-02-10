@@ -13,6 +13,10 @@ inline void m_assert(bool condition, const std::string &message="") {
     }
 }
 
+inline void m_error(const std::string &message="") {
+    m_assert(false, message);
+}
+
 void vl_imsmooth(const arma::fmat &I, arma::fmat &Is, 
         double sigma,
         const std::string &padding_ = "continuity",
@@ -68,5 +72,16 @@ void vl_kmeans(const arma::fmat &X, arma::fmat &Y, // for assignments and energy
         int maxNumComparisons = 100,
         int maxNumIterations = 100,
         int verbose = 0);
+        
+void vl_gmm (const arma::fmat &X, int numClusters,
+	arma::fmat &means, arma::fmat &covariances, arma::fmat &priors, arma::fmat &posteriors,
+	const std::string &initialization_ = "rand", 
+	const arma::fmat & initMeans_ = arma::fmat(), 
+	const arma::fmat & initCovariances_ = arma::fmat(),
+	const arma::fmat & initPriors_ = arma::fmat(),
+	int maxNumIterations = 100,
+	int numRepetitions = 1,
+	const arma::mat &covarianceBound_ = arma::mat(),
+	int verbose = 0);
         
 #endif /* VLFEAT_HPP_ */

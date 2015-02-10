@@ -24,6 +24,10 @@ cdef extern from "vlfeat.hpp":
             string, string, double, double) 
     cdef void c_vl_kmeans "vl_kmeans" (Mat[float] &, Mat[float] &, int, \
             string, string, string, double, int, int, int, int, int)
+    cdef void c_vl_gmm "vl_gmm" (Mat[float] &, int, \
+            Mat[float] &, Mat[float] &, Mat[float] &, Mat[float] &, \
+            string, Mat[float] &, Mat[float] &, Mat[float] &, \
+            int, int, Mat[double] &, int)
 
 def vl_sift(np.ndarray[np.float32_t, ndim=2] data, 
             frames=None,
@@ -222,3 +226,41 @@ def vl_kmeans(np.ndarray[float, ndim=2] X, int numCenters,
     Y = pyarma_from_float(_Y)
     
     return Y
+    
+def vl_gmm(np.ndarray[float, ndim=2] X, int numClusters,
+        string initialization = 'rand',
+        initMeans = None,
+        initCovariances = None,
+        initPriors = None,
+        int maxNumIterations = 100,
+        int numRepetitions = 1,
+        covarianceBound = None,
+        int verbose = 0):
+    cdef Mat[float] _X
+    cdef Mat[float] _initMeans
+    cdef Mat[float] _initCovariances
+    cdef Mat[float] _initPriors
+    cdef Mat[double] _covarianceBound
+    
+    _X = pyarma_to_float(X)
+    if initMeans is not None:
+        _initMeans = pyarma_to_float(initMeans)
+    if initCovariances is not None:
+        _initCovariances = pyarma_to_float(initCovariances)
+    if initPriors is not None:
+        _initPriors = pyarma_to_float(initPriors)
+    if covarianceBound is not None:
+        _covarianceBound = pyarma_to_double(np.float64(covarianceBound, order='F').reshape((-1,1)))
+    
+    cdef Mat[float] _means, _covariances, _priors, _posteriors
+    c_vl_gmm(_X, numClusters, \
+        _means, _covariances, _priors, _posteriors, \
+        initialization, _initMeans, _initCovariances, _initPriors, \
+        maxNumIterations, numRepetitions, _covarianceBound, verbose)
+    cdef np.ndarray[float, ndim=2] means, covariances, priors, posteriors
+    means = pyarma_from_float(_means)
+    covariances = pyarma_from_float(_covariances)
+    priors = pyarma_from_float(_priors)
+    posteriors = pyarma_from_float(_posteriors)
+    return means, covariances, priors, posteriors
+

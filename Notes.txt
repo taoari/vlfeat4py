@@ -1,6 +1,8 @@
 vl_sift changes:
 
 * uncomment <mexutils.h>, include <armadillo>
+#include "vlfeat.hpp"
+#include <armadillo>
 
 * delete option codes and options
 
