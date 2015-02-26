@@ -33,8 +33,11 @@ def vl_imsmooth(I, sigma):
     Currently only comptabile with vl_imsmooth for grayscale images'''
     if I.ndim == 2:
         return _vlfeat.vl_imsmooth(I, sigma)
+    elif I.ndim == 3 and I.shape[2] == 3:
+        im = [_vlfeat.vl_imsmooth(I[:,:,d], sigma) for d in range(3)]
+        return np.dstack(im)
     else:
-        raise NotImplementedError('Color images are not supported!')
+        raise NotImplementedError('Image format is not supported!')
         
 #    w = int(np.ceil(4.0*sigma))
 #    ksize = 2*w + 1
@@ -115,7 +118,7 @@ def vl_phow(I,
     dsiftOpts = DSiftOptions(opts)
 
     # make sure image I is float32, f_order
-    I = np.asfortranarray(I, dtype=np.float32)
+#    I = np.asfortranarray(I, dtype=np.float32)
     
     # Extract the features
     imageSize = I.shape
@@ -256,9 +259,11 @@ class DSiftOptions(object):
 if __name__ == "__main__":
     from scipy.misc import lena, imread
     import time
-    I = np.asfortranarray(lena(), dtype=np.float32)
+    I = np.asarray(lena(), dtype=np.float32)
     # I = imread('lena_color.jpg')
     __TIC = time.time()
-    frames, descrs = vl_phow(I, verbose=1) 
-    # frames, descrs = vl_phow(I, color='hsv', verbose=1) 
+#    frames, descrs = vl_phow(I, sizes=4, verbose=1) 
+    frames, descrs = vl_phow(I, sizes=4, color='opponent', verbose=1) 
     print time.time() - __TIC
+    print frames.shape
+    print descrs.shape
