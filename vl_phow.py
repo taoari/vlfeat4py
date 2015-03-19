@@ -13,36 +13,39 @@ Python rewrite of https://github.com/vlfeat/vlfeat/blob/master/toolbox/sift/vl_p
 
 """
 
-def rgb2gray(rgb):
-    '''MATLAB implementation of rgb2gray'''
-    r, g, b = rgb[:,:,0], rgb[:,:,1], rgb[:,:,2]
-    gray = 0.2989 * r + 0.5870 * g + 0.1140 * b
-    return gray
+from skimage.color import rgb2gray, rgb2hsv
+import skimage.filters.gaussian_filter as vl_imsmooth
 
-def rgb2hsv(rgb):
-    '''rgb2hsv.
-    
-    H, S scale to [0,1], V does not; MATLAB also scales V to [0,1]'''
-    from matplotlib.colors import rgb_to_hsv
-    return rgb_to_hsv(rgb)
-
-    
-def vl_imsmooth(I, sigma):
-    '''vl_imsmooth.
-    
-    Currently only comptabile with vl_imsmooth for grayscale images'''
-    if I.ndim == 2:
-        return _vlfeat.vl_imsmooth(I, sigma)
-    elif I.ndim == 3 and I.shape[2] == 3:
-        im = [_vlfeat.vl_imsmooth(I[:,:,d], sigma) for d in range(3)]
-        return np.dstack(im)
-    else:
-        raise NotImplementedError('Image format is not supported!')
-        
-#    w = int(np.ceil(4.0*sigma))
-#    ksize = 2*w + 1
-#    I = cv2.GaussianBlur(I, (ksize, ksize), sigma)
-#    return np.asfortranarray(I, dtype=I.dtype)
+#def rgb2gray(rgb):
+#    '''MATLAB implementation of rgb2gray'''
+#    r, g, b = rgb[:,:,0], rgb[:,:,1], rgb[:,:,2]
+#    gray = 0.2989 * r + 0.5870 * g + 0.1140 * b
+#    return gray
+#
+#def rgb2hsv(rgb):
+#    '''rgb2hsv.
+#    
+#    H, S scale to [0,1], V does not; MATLAB also scales V to [0,1]'''
+#    from matplotlib.colors import rgb_to_hsv
+#    return rgb_to_hsv(rgb)
+#
+#    
+#def vl_imsmooth(I, sigma):
+#    '''vl_imsmooth.
+#    
+#    Currently only comptabile with vl_imsmooth for grayscale images'''
+#    if I.ndim == 2:
+#        return _vlfeat.vl_imsmooth(I, sigma)
+#    elif I.ndim == 3 and I.shape[2] == 3:
+#        im = [_vlfeat.vl_imsmooth(I[:,:,d], sigma) for d in range(3)]
+#        return np.dstack(im)
+#    else:
+#        raise NotImplementedError('Image format is not supported!')
+#        
+##    w = int(4.0*sigma+0.5)
+##    ksize = 2*w + 1
+##    I = cv2.GaussianBlur(I, (ksize, ksize), sigma)
+##    return np.asfortranarray(I, dtype=I.dtype)
     
 def vl_phow(I,
             verbose=False,
