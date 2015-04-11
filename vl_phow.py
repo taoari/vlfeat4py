@@ -14,7 +14,7 @@ Python rewrite of https://github.com/vlfeat/vlfeat/blob/master/toolbox/sift/vl_p
 """
 
 from skimage.color import rgb2gray, rgb2hsv
-import skimage.filters.gaussian_filter as vl_imsmooth
+from skimage.filters import gaussian_filter
 
 #def rgb2gray(rgb):
 #    '''MATLAB implementation of rgb2gray'''
@@ -46,6 +46,9 @@ import skimage.filters.gaussian_filter as vl_imsmooth
 ##    ksize = 2*w + 1
 ##    I = cv2.GaussianBlur(I, (ksize, ksize), sigma)
 ##    return np.asfortranarray(I, dtype=I.dtype)
+
+def vl_imsmooth(I, sigma):
+    return gaussian_filter(I, sigma).astype('float32')
     
 def vl_phow(I,
             verbose=False,
@@ -262,7 +265,7 @@ class DSiftOptions(object):
 if __name__ == "__main__":
     from scipy.misc import lena, imread
     import time
-    I = np.asarray(lena(), dtype=np.float32)
+    I = np.asarray(lena(), dtype=np.float32) / 255.0
     # I = imread('lena_color.jpg')
     __TIC = time.time()
 #    frames, descrs = vl_phow(I, sizes=4, verbose=1) 
