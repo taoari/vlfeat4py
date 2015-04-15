@@ -4,6 +4,8 @@ VLFeat4Py: A wrapper library for VLFeat
 This is a Python wrapper library for the open source computer vision library [VLFeat](http://www.vlfeat.org/)
 using the [Armadillo](http://arma.sourceforge.net/) C++ Matrix Library.
 
+VLFeat4Py targets for both the ease of usage in C++ and Python, samples can be found under `test/` directory.
+
 VLFeat4Py is not targeted to be a complete wrapper for VLFeat, it is best used with the combination of 
 [sklearn](http://scikit-learn.org/stable/) and [skimage](http://scikit-image.org/docs/dev/api/skimage.html).
 
@@ -11,7 +13,7 @@ Current wrapped functions are:
 
 * vl_sift
 * vl_dsift
-* vl_imsmooth (obsolted, use `skimage.filters.gaussian_filter` instead)
+* vl_imsmooth (obsoleted, use `skimage.filters.gaussian_filter` instead)
 * vl_phow
 * vl_kmeans
 * vl_gmm
