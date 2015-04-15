@@ -16,6 +16,7 @@ Current wrapped functions are:
 * vl_imsmooth (obsoleted, use `skimage.filters.gaussian_filter` instead)
 * vl_phow
 * vl_kmeans
+* vl_homkermap
 * vl_gmm
 * vl_fisher
 
@@ -31,5 +32,18 @@ Usage
 -----
 
 ```
-from vlfeat import vl_dsift, vl_phow
+import numpy as np
+import time
+from scipy.misc import lena
+from vlfeat import vl_phow
+
+I = np.asarray(lena(), dtype=np.float32) / 255.0
+
+__TIC = time.time()
+# frames, descrs = vl_phow(I, sizes=4, verbose=1) 
+frames, descrs = vl_phow(I, sizes=4, color='opponent', verbose=1) 
+print time.time() - __TIC
+
+print frames.shape
+print descrs.shape
 ```
